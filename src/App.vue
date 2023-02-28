@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import { usePageStore } from './stores/page'
+import { RouterView } from "vue-router";
+import { usePageStore } from "./stores/page";
 
 const page = usePageStore();
-
-
 </script>
 
 <template>
@@ -14,10 +12,11 @@ const page = usePageStore();
         <div>
           <a-row>
             <a-col :span="2">
-              <RouterLink to="/" style="font-size: 16px; padding: 1rem;">Home</RouterLink>
+              <RouterLink to="/" style="font-size: 16px; padding: 1rem"
+                >Home</RouterLink
+              >
             </a-col>
-            <a-col :span="20"> {{ page.title }}
-            </a-col>
+            <a-col :span="20"> {{ page.title }} </a-col>
             <a-col :span="2" />
           </a-row>
         </div>
@@ -25,7 +24,7 @@ const page = usePageStore();
       <a-layout-content>
         <RouterView />
       </a-layout-content>
-      <a-layout-footer style="background: #DBDBDB;">@AIXB</a-layout-footer>
+      <a-layout-footer style="background: #dbdbdb">@AIXB</a-layout-footer>
     </a-layout>
   </div>
 </template>
