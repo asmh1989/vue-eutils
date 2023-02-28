@@ -1,0 +1,56 @@
+@import './base.css';
+
+#app {
+  display: flex;
+}
+
+.content-style {
+  min-width: 800px;
+  text-align: center;
+  /* display: flex; */
+}
+
+.background1 {
+  display: flex;
+  justify-content: center;
+  background: #f0f0f0;
+  width: 100%;
+  padding: 2rem;
+}
+
+
+
+.list-item-div {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  text-align: left;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+/* a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+} */
+
+/* @media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: block;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+} */
