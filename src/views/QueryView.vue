@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, createVNode } from "vue";
 import { useRoute } from "vue-router";
 import { APISettings } from "../api/config";
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
 
 import { usePageStore } from "../stores/page";
+import { DownloadOutlined, CloudDownloadOutlined } from "@ant-design/icons-vue";
 
 const page = usePageStore();
 page.setTitle("Query Search");
@@ -42,6 +43,38 @@ function getDoiUrl2(doi: string) {
 function setEllipsis(v: any) {
   // console.log('data = ', v)
   v.ellipsis = !v.ellipsis;
+}
+
+function downloadCsv() {
+  Modal.confirm({
+    title: "Click OK to start download up to 100 items",
+    icon: createVNode(CloudDownloadOutlined),
+    async onOk() {
+      try {
+        let res = await fetch(
+          `${APISettings.baseURL}/api/pubmed/save/${encodeURIComponent(
+            query_text.value
+          )}?cur_page=0&page_size=100&file_type=csv`
+        );
+
+        if (res.status == 200) {
+          let json = await res.json();
+          if (json.ok) {
+            let id = json.ok.id;
+            let url = `${APISettings.baseURL}/download/csv/${id}`;
+            console.log(`start download url = ${url}`);
+            window.open(url, "_black");
+          } else {
+            message.error(`err:${json.error.msg}`);
+          }
+        }
+        // console.log('data = ', JSON.stringify(data.value));
+      } catch (e) {
+        console.log("getdata error = ", e);
+      }
+    },
+    onCancel() {},
+  });
 }
 
 function search() {
@@ -111,21 +144,43 @@ function onPageChange(page: number, pageSize: number) {
 <template>
   <!-- // header -->
   <div class="background1">
-    <div
-      style="display: flex; flex-direction: row; min-width: none"
-      class="content-style"
-    >
-      <a-input
-        style="flex: 1"
-        v-model:value="query_text"
-        placeholder="Enter a search term"
-        @pressEnter="search"
-        allowClear
-      />
-      <a-button type="primary" @click="search">Search</a-button>
-    </div>
+    <a-space>
+      <div
+        style="display: flex; flex-direction: row; min-width: none"
+        class="content-style"
+      >
+        <a-input
+          style="flex: 1"
+          v-model:value="query_text"
+          placeholder="Enter a search term"
+          @pressEnter="search"
+          allowClear
+        />
+        <a-button type="primary" @click="search">Search</a-button>
+      </div>
+
+      <a-tooltip v-if="count > 0" placement="bottom">
+        <template #title>Download up to 100 items</template>
+        <a-button type="primary" shape="round" @click="downloadCsv">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          CSV
+        </a-button>
+      </a-tooltip>
+
+      <a-tooltip v-if="false" placement="bottom">
+        <template #title>Download up to 100 items</template>
+        <a-button type="primary" shape="round">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          DOI
+        </a-button>
+      </a-tooltip>
+    </a-space>
   </div>
-  <p />
+  <br />
   <div v-if="loading" style="margin: auto">
     <a-spin size="large" tip="Loading..." />
   </div>
@@ -151,14 +206,7 @@ function onPageChange(page: number, pageSize: number) {
               <a :href="getUrlAddress(item.PMID)"> {{ item.Title }}</a>
               <div>{{ getAuthor(item.AuthorFirst, item.AuthorLast) }}</div>
               <div style="color: #4d8055">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: flex-start;
-                    align-items: center;
-                  "
-                >
+                <div class="list-item-div2">
                   <div>{{ item.EpubYear }}-</div>
                   <div>{{ item.EpubMonth }}</div>
                   <a-divider type="vertical" />
@@ -199,5 +247,29 @@ function onPageChange(page: number, pageSize: number) {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+.list-item-div2 {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.background1 {
+  display: flex;
+  justify-content: center;
+  background: #f0f0f0;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.list-item-div {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  text-align: left;
+  font-size: 18px;
+  line-height: 24px;
 }
 </style>

@@ -10,25 +10,6 @@
   /* display: flex; */
 }
 
-.background1 {
-  display: flex;
-  justify-content: center;
-  background: #f0f0f0;
-  width: 100%;
-  padding: 2rem;
-}
-
-
-
-.list-item-div {
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  text-align: left;
-  font-size: 18px;
-  line-height: 24px;
-}
-
 /* a,
 .green {
   text-decoration: none;
