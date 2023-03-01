@@ -198,42 +198,44 @@ function onPageChange(page: number, pageSize: number) {
     <a-list :data-source="data">
       <template #renderItem="{ item, index }">
         <a-list-item>
-          <div style="display: flex; flex-direction: row; align-items: center">
-            <div style="font-size: 16px; padding: 1rem; color: #5b616b">
+          <a-row style="align-items: center">
+            <a-col :span="1" style="font-size: 16px; color: #5b616b">
               {{ (cur_page - 1) * page_size + index + 1 }}
-            </div>
-            <div class="list-item-div">
-              <a :href="getUrlAddress(item.PMID)"> {{ item.Title }}</a>
-              <div>{{ getAuthor(item.AuthorFirst, item.AuthorLast) }}</div>
-              <div style="color: #4d8055">
-                <div class="list-item-div2">
-                  <div>{{ item.EpubYear }}-</div>
-                  <div>{{ item.EpubMonth }}</div>
-                  <a-divider type="vertical" />
-                  <div>ISSN: {{ item.ISSN }}</div>
-                  <a-divider type="vertical" />
+            </a-col>
+            <a-col :span="23">
+              <div class="list-item-div">
+                <a :href="getUrlAddress(item.PMID)"> {{ item.Title }}</a>
+                <div>{{ getAuthor(item.AuthorFirst, item.AuthorLast) }}</div>
+                <div style="color: #4d8055">
+                  <div class="list-item-div2">
+                    <div>{{ item.EpubYear }}-</div>
+                    <div>{{ item.EpubMonth }}</div>
+                    <a-divider type="vertical" />
+                    <div>ISSN: {{ item.ISSN }}</div>
+                    <a-divider type="vertical" />
 
-                  <div>doi: {{ item.DOI }}</div>
-                  <a-divider type="vertical" />
+                    <div>doi: {{ item.DOI }}</div>
+                    <a-divider type="vertical" />
 
-                  <a :href="getDoiUrl(item.DOI)" target="_blank">sci-hub</a>
-                  <a-divider type="vertical" />
+                    <a :href="getDoiUrl(item.DOI)" target="_blank">sci-hub</a>
+                    <a-divider type="vertical" />
 
-                  <a :href="getDoiUrl2(item.DOI)" target="_blank">doi.org</a>
+                    <a :href="getDoiUrl2(item.DOI)" target="_blank">doi.org</a>
+                  </div>
+                  <div>PMID: {{ item.PMID }}</div>
                 </div>
-                <div>PMID: {{ item.PMID }}</div>
-              </div>
 
-              <div
-                v-if="item.ellipsis"
-                class="lines"
-                @click="setEllipsis(item)"
-              >
-                {{ item.Abstract }}
+                <div
+                  v-if="item.ellipsis"
+                  class="lines"
+                  @click="setEllipsis(item)"
+                >
+                  {{ item.Abstract }}
+                </div>
+                <div v-else @click="setEllipsis(item)">{{ item.Abstract }}</div>
               </div>
-              <div v-else @click="setEllipsis(item)">{{ item.Abstract }}</div>
-            </div>
-          </div>
+            </a-col>
+          </a-row>
         </a-list-item>
       </template>
     </a-list>
