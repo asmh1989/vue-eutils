@@ -25,6 +25,7 @@ const search_content: Array<string> = [
   "Author",
   "Date - Publication",
   "Journal",
+  "Publication Type",
   "Title",
   "Title/Abstract",
 ];
@@ -103,6 +104,9 @@ function queryTextChange() {
       break;
     case "Title/Abstract":
       add_value = `${value.value}[Title/Abstract]`;
+      break;
+    case "Publication Type":
+      add_value = `${value.value}[Publication Type]`;
       break;
     default:
       break;
