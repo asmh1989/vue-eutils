@@ -198,7 +198,7 @@ function onPageChange(page: number, pageSize: number) {
     <a-list :data-source="data">
       <template #renderItem="{ item, index }">
         <a-list-item>
-          <a-row style="align-items: center">
+          <a-row style="align-items: center; width: 100%">
             <a-col :span="1" style="font-size: 16px; color: #5b616b">
               {{ (cur_page - 1) * page_size + index + 1 }}
             </a-col>
