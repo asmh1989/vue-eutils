@@ -192,11 +192,9 @@ function hasDate() {
     <div class="search" style="padding: 0.5rem 0 2rem 0">
       <a-dropdown>
         <template #overlay>
-          <a-menu
-            @click="(e: any) => {
+          <a-menu @click="(e: any) => {
             current_search_index = e.key;
-          }"
-          >
+          }">
             <template v-for="(message, index) in search_content" :key="index">
               <a-menu-item>
                 {{ message }}
@@ -212,38 +210,27 @@ function hasDate() {
 
       <div class="flex-item" />
       <div class="input1" v-if="hasDate()">
-        <a-input
-          v-model:value="start_date"
-          placeholder="YYYY/MM/DD"
-          allowClear
-        />
+        <a-input v-model:value="start_date" placeholder="YYYY/MM/DD" allowClear />
         <div style="padding: 0 0.5rem; display: flex; align-items: center">
           to
         </div>
         <a-input v-model:value="end_date" placeholder="Present" allowClear />
       </div>
       <div class="input1" v-else>
-        <a-input
-          v-model:value="value"
-          placeholder="Enter a search term"
-          allowClear
-        />
+        <a-input v-model:value="value" placeholder="Enter a search term" allowClear />
       </div>
       <div class="flex-item" />
 
       <a-dropdown-button @click="queryTextChange">
         {{ getIfOrText() }}
         <template #overlay>
-          <a-menu
-            :disabled="if_disabled"
-            @click="(e: any) => {
-            current_if_or_index = e.key;
+          <a-menu :disabled="if_disabled" @click="(e: any) => {
+              current_if_or_index = e.key;
 
-            if (value2 != '' && value != '') {
-              queryTextChange();
-            }
-          }"
-          >
+              if (value2 != '' && value != '') {
+                queryTextChange();
+              }
+            }">
             <template v-for="(message, index) in if_or" :key="index">
               <a-menu-item>
                 {{ message }}
@@ -258,12 +245,7 @@ function hasDate() {
     </div>
     <div>Query box</div>
     <div class="search" style="padding: 0.5rem 0 2rem 0">
-      <a-textarea
-        v-model:value="value2"
-        placeholder="Enter / edit your searcg query here"
-        :rows="3"
-        allowClear
-      />
+      <a-textarea v-model:value="value2" placeholder="Enter / edit your search query here" :rows="3" allowClear />
       <div class="flex-item" />
       <a-button type="primary" @click="openQueryView">Search</a-button>
     </div>
