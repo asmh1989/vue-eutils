@@ -89,7 +89,6 @@ function search() {
   } else if (query_text.value != prev_query) {
     router.replace(`/pubmed/${encodeURIComponent(query_text.value)}`);
     getData();
-
   }
 }
 
@@ -120,7 +119,6 @@ async function getData() {
         res_error.value = json.error.msg;
       }
     }
-
   } catch (e) {
     console.log("getdata error = ", e);
     loading.value = false;
@@ -129,7 +127,7 @@ async function getData() {
 }
 
 async function getChatData() {
-  console.log('getChatData...');
+  console.log("getChatData...");
 
   if (gpt_question.value.length < 2) {
     message.info("please input quest first!");
@@ -140,15 +138,16 @@ async function getChatData() {
 
   try {
     let formData = new FormData();
-    formData.append('query', query_text.value);
-    formData.append('question', gpt_question.value.toString());
-    formData.append('page_size', "20");
+    formData.append("query", query_text.value);
+    formData.append("question", gpt_question.value.toString());
+    formData.append("page_size", "1");
 
     let res = await fetch(
-      `${APISettings.baseURL}/api/openai/summary_with_query`, {
-      body: formData,
-      method: "post"
-    }
+      `${APISettings.baseURL}/api/openai/summary_with_query`,
+      {
+        body: formData,
+        method: "post",
+      }
     );
 
     if (res.status == 200) {
@@ -166,7 +165,6 @@ async function getChatData() {
         message.warn(json.error.msg);
       }
     }
-
   } catch (e) {
     console.log("getChatData error = ", e);
   } finally {
@@ -175,17 +173,17 @@ async function getChatData() {
 }
 
 function handleChat() {
-  getChatData()
+  getChatData();
 }
 
 function handleChatCancel() {
   if (!gpt_loading.value) {
-    gpt_visible.value = false
+    gpt_visible.value = false;
   }
 }
 
 function showGptDialog() {
-  gpt_visible.value = true
+  gpt_visible.value = true;
 }
 
 onMounted(() => {
@@ -207,10 +205,13 @@ function onPageChange(page: number, pageSize: number) {
 <template>
   <!-- // header -->
   <div class="background1">
-
     <a-modal v-model:visible="gpt_visible" title="Auto GPT Question">
       <a-textarea v-model:value="gpt_question" placeholder="eg: what is the relation between FXR and NLRP3" :rows="4"
         allowClear />
+      <div v-if="gpt_loading" style="margin-top: 10px">
+        <h3>Please wait patiently for 3-5 minutes!!</h3>
+        <h3>DO NOT CLOSE THE PAGE!!</h3>
+      </div>
       <template #footer>
         <a-button key="back" @click="handleChatCancel">Cancel</a-button>
         <a-button key="submit" type="primary" :loading="gpt_loading" @click="handleChat">Submit</a-button>

@@ -12,12 +12,12 @@ const page = usePageStore();
         <div>
           <a-row>
             <a-col :span="2">
-              <RouterLink to="/" style="font-size: 16px; padding: 1rem"
-                >Home</RouterLink
-              >
+              <RouterLink to="/" class="text">Home</RouterLink>
             </a-col>
-            <a-col :span="20"> {{ page.title }} </a-col>
-            <a-col :span="2" />
+            <a-col :span="20" class="text"> {{ page.title }} </a-col>
+            <a-col :span="2">
+              <a href="http://192.168.2.212:5432" target="_blank" class="text">Web-ChatGPT</a>
+            </a-col>
           </a-row>
         </div>
       </a-layout-header>
@@ -34,6 +34,12 @@ const page = usePageStore();
   display: flex;
   width: 100%;
   text-align: center;
+}
+
+.text {
+  font-size: 20px;
+  /* padding: 1rem; */
+  /* color: aliceblue; */
 }
 
 .header-home {
