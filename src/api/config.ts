@@ -3,5 +3,8 @@ export const APISettings = {
   headers: new Headers({
     Accept: "application/json",
   }),
-  baseURL: "http://192.168.2.212:4321",
+  baseURL:
+    import.meta.env.MODE === "development"
+      ? "http://192.168.2.212:4321"
+      : "http://192.168.2.27:4321",
 };
