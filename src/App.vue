@@ -11,11 +11,11 @@ const page = usePageStore();
       <a-layout-header>
         <div>
           <a-row>
-            <a-col :span="2">
+            <a-col :span="6">
               <RouterLink to="/" class="text">Home</RouterLink>
             </a-col>
-            <a-col :span="20" class="text"> {{ page.title }} </a-col>
-            <a-col :span="2">
+            <a-col :span="12" class="text"> {{ page.title }} </a-col>
+            <a-col :span="6">
               <a href="http://192.168.2.212:5432" target="_blank" class="text">Web-ChatGPT</a>
             </a-col>
           </a-row>

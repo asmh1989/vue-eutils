@@ -140,7 +140,7 @@ async function getChatData() {
     let formData = new FormData();
     formData.append("query", query_text.value);
     formData.append("question", gpt_question.value.toString());
-    formData.append("page_size", "1");
+    formData.append("page_size", import.meta.env.MODE === "development" ? "1" : "20");
 
     let res = await fetch(
       `${APISettings.baseURL}/api/openai/summary_with_query`,
