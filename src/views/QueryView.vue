@@ -205,7 +205,7 @@ function onPageChange(page: number, pageSize: number) {
 <template>
   <!-- // header -->
   <div class="background1">
-    <a-modal v-model:visible="gpt_visible" title="Auto GPT Question">
+    <a-modal v-model:visible="gpt_visible" title="Auto GPT Question" :closable="false" :maskClosable="false">
       <a-textarea v-model:value="gpt_question" placeholder="eg: what is the relation between FXR and NLRP3" :rows="4"
         allowClear />
       <div v-if="gpt_loading" style="margin-top: 10px">
