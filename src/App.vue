@@ -16,7 +16,7 @@ const page = usePageStore();
             </a-col>
             <a-col :span="12" class="text"> {{ page.title }} </a-col>
             <a-col :span="6">
-              <a href="http://192.168.2.212:5432" target="_blank" class="text">Web-ChatGPT</a>
+              <a href="/#/portal" class="text">Portal</a>
             </a-col>
           </a-row>
         </div>
