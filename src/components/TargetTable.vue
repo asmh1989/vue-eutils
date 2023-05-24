@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { APISettings } from '@/api/config';
-import type { TableColumnType, TableProps } from 'ant-design-vue';
+import type { TableDataType } from '@/common/mode';
+import { type TableColumnType, type TableProps, message } from 'ant-design-vue';
 import { ref } from 'vue';
 
-type TableDataType = {
-    SMILES: string;
-    img1: string;
-    img2: string;
-    mean: number;
-    median: number;
-    std: number;
-    title: string;
-};
+
 
 const columns: TableColumnType<TableDataType>[] = [
     {
@@ -49,16 +42,20 @@ const onChange: TableProps<TableDataType>['onChange'] = (pagination, filters, so
 };
 
 interface Props {
-    data: object[]	 // v-model 默认的名字
-    select: string
+    data: TableDataType[]	 // v-model 默认的名字
+    select: TableDataType | undefined
 }
 
 const props = withDefaults(defineProps<Props>(), {
     data: () => [],
-    select: ''
+    select: undefined
 })
 
 const emit = defineEmits(['update:select'])
+const customKey = ref('');
+const modalVisble = ref(false);
+const modalImg = ref('');
+
 
 function handleChange(val: any) {
     // 触发改变绑定值
@@ -69,17 +66,81 @@ function getUrl(url: String) {
     return `${APISettings.baseURL}/${url}`
 }
 
+function rowAction(record: TableDataType, index: number) {
+    // console.log("table rowAction " + index)
+
+    return {
+        style: {
+            'background-color': record.title == customKey.value ? 'rgb(0,180,237, 0.1)' : '',
+        },
+        onClick: (event: any) => {
+            console.log("table onClick " + index)
+            customKey.value = record.title;
+            emit('update:select', record);
+
+        },
+
+    }
+}
+
+function clickMenu(key: number, text: any) {
+    let data = props.data.find((person => person.img1 === text));
+    console.log(`clickMenu key = ${key}, data = ${JSON.stringify(data)}`);
+
+    if (key == 0) {
+        modalImg.value = getUrl(data!.img2);
+        modalVisble.value = true;
+    } else if (key == 1) {
+        navigator.clipboard.writeText(data!.SMILES)
+            .then(() => message.success('Smiles已复制到剪贴板'))
+            .catch(err => message.error('Failed to copy text: ', err))
+    }
+}
+
+const handleCancel = () => {
+    modalVisble.value = false;
+};
+
 </script>
 
 <template>
-    <a-table :columns="columns" :data-source="data" @change="onChange" :scroll="{ y: 480 }">
-        <template #bodyCell="{ column, text }">
-            <template v-if="column.dataIndex === 'img1'">
-                <!-- {{ text }} -->
-                <img :src="getUrl(text)" style="height:100px;" />
+    <main>
+        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 480 }">
+            <template #bodyCell="{ column, text }">
+
+                <template v-if="column.dataIndex === 'img1'">
+                    <!-- {{ text }} -->
+                    <a-dropdown placement="topLeft">
+                        <img :src="getUrl(text)" style="height:100px;" />
+
+                        <template #overlay>
+                            <a-menu @click="(e: any) => {
+                                clickMenu(e.key, text);
+                            }">
+                                <a-menu-item key="0">
+                                    查看
+                                </a-menu-item>
+                                <a-menu-item key="1">
+                                    复制
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </template>
+
+
             </template>
-        </template>
-    </a-table>
+
+
+
+        </a-table>
+        <a-modal v-model:visible="modalVisble">
+            <template #footer>
+                <a-button key="submit" @click="handleCancel">Ok</a-button>
+            </template>
+            <img :src="modalImg" style="height:400px;" />
+        </a-modal>
+    </main>
 </template>
 
 <style></style>

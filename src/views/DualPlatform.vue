@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { usePageStore } from "../stores/page";
 import { APISettings } from "@/api/config";
 import type { TabsProps } from "ant-design-vue/lib/tabs/src/Tabs";
 
 import TargetTable from "../components/TargetTable.vue"
+import type { TableDataType } from "@/common/mode";
 
 const page = usePageStore();
 page.setTitle("Dual Target Drug Design Platform");
@@ -17,8 +18,8 @@ const options = ref([]);
 const target_data = ref<Map<String, Object>>(new Map());
 
 const left_data = ref();
-const left_select = ref();
-const right_select = ref();
+const left_select = ref<TableDataType | undefined>(undefined);
+const right_select = ref<TableDataType | undefined>(undefined);
 const right_data = ref();
 
 async function getData() {
@@ -81,8 +82,17 @@ function targetChange(value: String) {
 onMounted(() => {
     console.log("onMounted ...");
 
+    watch(left_select, (newValue, oldValue) => {
+        console.log(`Count changed from ${oldValue} to ${newValue}`)
+    })
+
     getData();
 });
+
+function getUrl(url: String) {
+    return `${APISettings.baseURL}/${url}`
+}
+
 
 </script>
 
@@ -97,8 +107,23 @@ onMounted(() => {
             <a-radio-button value="left">{{ dual_target.split("-")[0] }}</a-radio-button>
             <a-radio-button value="right">{{ dual_target.split("-")[1] }}</a-radio-button>
         </a-radio-group>
-        <TargetTable v-show="cur_target == 'left'" :data="left_data" :select="left_select" />
-        <TargetTable v-show="cur_target == 'right'" :data="right_data" :select="right_select" />
+        <div style="padding: 0 4rem;">
+            <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
+            <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
+        </div>
+        <div v-if="left_select || right_select">
+            <p> Select: </p>
+            <a-space>
+
+                <img v-if="left_select" :src="getUrl(left_select!.img1)" style="height:100px;" />
+
+                <img v-if="right_select" :src="getUrl(right_select!.img1)" style="height:100px;" />
+            </a-space>
+
+        </div>
+
+        <a-button>生成</a-button>
+        <div style="padding: 0.25rem;" />
 
     </div>
 </template>
