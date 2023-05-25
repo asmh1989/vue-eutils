@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { APISettings } from '@/api/config';
-import type { TableDataType } from '@/common/mode';
-import { type TableColumnType, type TableProps, message } from 'ant-design-vue';
+import { copyToClipboard, type TableDataType } from '@/common/mode';
+import type { TableColumnType, TableProps } from 'ant-design-vue';
 import { ref } from 'vue';
 
 
@@ -92,9 +92,11 @@ function clickMenu(key: number, text: any) {
         modalImg.value = getUrl(data!.img2);
         modalVisble.value = true;
     } else if (key == 1) {
-        navigator.clipboard.writeText(data!.SMILES)
-            .then(() => message.success('Smiles已复制到剪贴板'))
-            .catch(err => message.error('Failed to copy text: ', err))
+
+        copyToClipboard(data!.SMILES);
+        // navigator.clipboard.writeText(data!.SMILES)
+        //     .then(() => message.success('Smiles已复制到剪贴板'))
+        //     .catch(err => message.error('Failed to copy text: ', err))
     }
 }
 

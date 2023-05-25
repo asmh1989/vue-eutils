@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { APISettings } from '@/api/config';
-import type { TableGenDataType } from '@/common/mode';
+import { copyToClipboard, type TableGenDataType } from '@/common/mode';
 
-import { type TableColumnType, type TableProps, message } from 'ant-design-vue';
+import type { TableColumnType, TableProps } from 'ant-design-vue';
 import { onBeforeUpdate, ref } from 'vue';
 
 import Doi from './Doi.vue'
@@ -132,7 +132,9 @@ function getUrl3(url: String, left: boolean) {
     return `${APISettings.baseURL}/dual/${props.target}/${n}/Motifs-R/Smi_${url}_dist.png`
 }
 
-function clickMenu(key: number, text: any) {
+
+
+function clickMenu(key: number, text: string) {
     // let data = props.data.find((person => person.img1 === text));
     // console.log(`clickMenu key = ${key}, data = ${JSON.stringify(data)}`);
 
@@ -140,9 +142,8 @@ function clickMenu(key: number, text: any) {
         // modalImg.value = getUrl(data!.img2);
         // modalVisble.value = true;
     } else if (key == 1) {
-        navigator.clipboard.writeText(text)
-            .then(() => message.success('Smiles已复制到剪贴板'))
-            .catch(err => message.error('Failed to copy text: ', err))
+        copyToClipboard(text);
+
     }
 }
 
@@ -154,24 +155,16 @@ function clickMenu1(key: number, text: any, index: string, left: boolean) {
         modalImg.value = getUrl3((data as any)[index], left);
         modalVisble.value = true;
     } else if (key == 1) {
-        navigator.clipboard.writeText(text)
-            .then(() => message.success('Smiles已复制到剪贴板'))
-            .catch(err => message.error('Failed to copy text: ', err))
+        copyToClipboard(text);
+        // navigator.clipboard.writeText(text)
+        //     .then(() => message.success('Smiles已复制到剪贴板'))
+        //     .catch(err => message.error('Failed to copy text: ', err))
     }
 }
 
 const handleCancel = () => {
     modalVisble.value = false;
 };
-
-function toArray(text: string) {
-    try {
-        console.log('text', JSON.parse(text));
-        return JSON.parse(text);
-    } catch (e) {
-        return [];
-    }
-}
 
 
 </script>
