@@ -3,13 +3,17 @@
 import { usePageStore } from "../stores/page";
 
 const page = usePageStore();
-page.setTitle("生物信息工具大杂烩");
+page.setTitle("工具大杂烩");
 
 
 </script>
 
 <template>
     <div style="margin-top: 3rem;">
+        <div class="padding">
+            <a href="/#/dual" target="_blank" class="text">双靶点平台</a>
+            <p>Dual Target Drug Design Platform</p>
+        </div>
         <div class="padding">
             <a href="http://192.168.2.212:5432" target="_blank" class="text">Web-ChatGPT</a>
             <p>内部搭建的Chat-GPT平台</p>

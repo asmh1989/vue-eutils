@@ -6,12 +6,15 @@ import { APISettings } from "@/api/config";
 import type { TabsProps } from "ant-design-vue/lib/tabs/src/Tabs";
 
 import TargetTable from "../components/TargetTable.vue"
-import type { TableDataType } from "@/common/mode";
+import GenTable from "../components/GenTable.vue"
+
+import type { TableDataType, TableGenDataType } from "@/common/mode";
+import { message } from "ant-design-vue";
 
 const page = usePageStore();
 page.setTitle("Dual Target Drug Design Platform");
 
-const dual_target = ref<String>("");
+const dual_target = ref<string | undefined>(undefined);
 const cur_target = ref<TabsProps['tabPosition']>('left');;
 const options = ref([]);
 
@@ -21,6 +24,7 @@ const left_data = ref();
 const left_select = ref<TableDataType | undefined>(undefined);
 const right_select = ref<TableDataType | undefined>(undefined);
 const right_data = ref();
+const gen_data = ref<TableGenDataType[] | undefined>(undefined);
 
 async function getData() {
     try {
@@ -59,7 +63,7 @@ async function getTagertInfo(dual: String, left: number) {
             }
         }
     } catch (e) {
-        console.log("getdata error = ", e);
+        console.log("getTagertInfo error = ", e);
     }
 }
 
@@ -83,7 +87,7 @@ onMounted(() => {
     console.log("onMounted ...");
 
     watch(left_select, (newValue, oldValue) => {
-        console.log(`Count changed from ${oldValue} to ${newValue}`)
+        // console.log(`Count changed from ${oldValue} to ${newValue}`)
     })
 
     getData();
@@ -91,6 +95,29 @@ onMounted(() => {
 
 function getUrl(url: String) {
     return `${APISettings.baseURL}/${url}`
+}
+
+async function clickGen() {
+    if (left_select.value && right_select.value) {
+        try {
+            let res = await fetch(
+                `${APISettings.baseURL}/api/dual/${dual_target.value}/${left_select.value.SMILES}/${right_select.value.SMILES}`
+            );
+            if (res.status == 200) {
+                let json = await res.json();
+                if (json.ok) {
+                    gen_data.value = json.ok;
+
+                    if (json.ok.length == 0) {
+                        message.info('未发现可生成的分子');
+                    }
+                } else {
+                }
+            }
+        } catch (e) {
+            console.log("clickGen error = ", e);
+        }
+    }
 }
 
 
@@ -102,29 +129,36 @@ function getUrl(url: String) {
         <a-select v-model:value="dual_target" style="width: 10.0rem" placeholder="Dual Taget Select" :options="options"
             @change="handleChange"></a-select>
 
-        <a-radio-group v-if="dual_target.length != 0" v-model:value="cur_target" :style="{ marginBottom: '8px' }"
+        <a-radio-group v-if="dual_target" v-model:value="cur_target" :style="{ marginBottom: '8px' }"
             @change="targetChange">
             <a-radio-button value="left">{{ dual_target.split("-")[0] }}</a-radio-button>
             <a-radio-button value="right">{{ dual_target.split("-")[1] }}</a-radio-button>
         </a-radio-group>
-        <div style="padding: 0 4rem;">
+        <div style="width: 90%;">
             <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
             <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
         </div>
         <div v-if="left_select || right_select">
             <p> Select: </p>
             <a-space>
-
-                <img v-if="left_select" :src="getUrl(left_select!.img1)" style="height:100px;" />
-
-                <img v-if="right_select" :src="getUrl(right_select!.img1)" style="height:100px;" />
+                <a-tooltip>
+                    <template #title>{{ left_select?.title }}</template>
+                    <img v-if="left_select" :src="getUrl(left_select!.img1)" style="height:100px;" />
+                </a-tooltip>
+                <a-tooltip>
+                    <template #title>{{ right_select?.title }}</template>
+                    <img v-if="right_select" :src="getUrl(right_select!.img1)" style="height:100px;" />
+                </a-tooltip>
             </a-space>
 
         </div>
-
-        <a-button>生成</a-button>
         <div style="padding: 0.25rem;" />
-
+        <a-button @click="clickGen">生成</a-button>
+        <div style="padding: 0.25rem;" />
+        <div style="width: 90%;">
+            <GenTable :data="gen_data" :target="dual_target" />
+        </div>
+        <div style="padding: 0.25rem;" />
     </div>
 </template>
 

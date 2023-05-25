@@ -14,7 +14,8 @@ const columns: TableColumnType<TableDataType>[] = [
     {
         title: 'struct',
         dataIndex: 'img1',
-        key: 'img1'
+        key: 'img1',
+        width: 240,
     },
     {
         title: 'mean',
@@ -74,7 +75,7 @@ function rowAction(record: TableDataType, index: number) {
             'background-color': record.title == customKey.value ? 'rgb(0,180,237, 0.1)' : '',
         },
         onClick: (event: any) => {
-            console.log("table onClick " + index)
+            // console.log("table onClick " + index)
             customKey.value = record.title;
             emit('update:select', record);
 
@@ -105,13 +106,13 @@ const handleCancel = () => {
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 480 }">
+        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 480 }" :pagination="false">
             <template #bodyCell="{ column, text }">
 
                 <template v-if="column.dataIndex === 'img1'">
                     <!-- {{ text }} -->
                     <a-dropdown placement="topLeft">
-                        <img :src="getUrl(text)" style="height:100px;" />
+                        <img :src="getUrl(text)" style="width:100%;" />
 
                         <template #overlay>
                             <a-menu @click="(e: any) => {
