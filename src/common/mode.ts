@@ -25,6 +25,9 @@ export type TableGenDataType = {
   Right_std: number;
   SMILES: string;
   title: string;
+  JAK1ToJAK2_mean?: number;
+  JAK1ToJAK2_std?: number;
+  JAK1ToJAK2_median?: number;
 };
 
 export function getDoiUrl(doi: string) {

@@ -125,16 +125,17 @@ async function clickGen() {
 
 <template>
     <div class="main">
-        <div style="padding: 0.25rem;" />
+        <a-back-top :visibilityHeight="300" />
+
+        <div style="padding: 0.1rem;" />
         <a-select v-model:value="dual_target" style="width: 10.0rem" placeholder="Dual Taget Select" :options="options"
             @change="handleChange"></a-select>
 
-        <a-radio-group v-if="dual_target" v-model:value="cur_target" :style="{ marginBottom: '8px' }"
-            @change="targetChange">
+        <a-radio-group v-if="dual_target" v-model:value="cur_target" @change="targetChange">
             <a-radio-button value="left">{{ dual_target.split("-")[0] }}</a-radio-button>
             <a-radio-button value="right">{{ dual_target.split("-")[1] }}</a-radio-button>
         </a-radio-group>
-        <div style="width: 90%;">
+        <div style="width: 60%;">
             <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
             <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
         </div>
@@ -153,7 +154,7 @@ async function clickGen() {
 
         </div>
         <div style="padding: 0.25rem;" />
-        <a-button @click="clickGen">生成</a-button>
+        <a-button @click="clickGen">Generate</a-button>
         <div style="padding: 0.25rem;" />
         <div style="width: 90%;">
             <GenTable :data="gen_data" :target="dual_target" />
@@ -169,7 +170,7 @@ async function clickGen() {
     align-items: center;
     /* 将子元素垂直居中 */
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.25rem;
     /* 将子元素水平居中 */
 }
 </style>

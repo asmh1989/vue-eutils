@@ -108,7 +108,7 @@ const handleCancel = () => {
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 480 }" :pagination="false"
+        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 420 }" :pagination="false"
             :bordered="true">
             <template #bodyCell="{ column, text }">
 

@@ -3,7 +3,7 @@ import { APISettings } from '@/api/config';
 import { copyToClipboard, type TableGenDataType } from '@/common/mode';
 
 import type { TableColumnType, TableProps } from 'ant-design-vue';
-import { onBeforeUpdate, ref } from 'vue';
+import { onBeforeUpdate, onMounted, ref } from 'vue';
 
 import Doi from './Doi.vue'
 
@@ -74,6 +74,36 @@ let columns: TableColumnType<TableGenDataType>[] = [
 
 ];
 
+let columns2: TableColumnType<TableGenDataType>[] = [
+    {
+        title: 'struct',
+        dataIndex: 'SMILES',
+        key: 'smiles',
+        width: 240,
+        fixed: 'left'
+    },
+    {
+        title: 'JAK1ToJAK2_mean',
+        dataIndex: 'JAK1ToJAK2_mean',
+        sorter: (a: TableGenDataType, b: TableGenDataType) => a.JAK1ToJAK2_mean! - b.JAK1ToJAK2_mean!,
+        sortDirections: ['descend', 'ascend'],
+    },
+    {
+        title: 'JAK1ToJAK2_median',
+        dataIndex: 'JAK1ToJAK2_std',
+        sorter: (a: TableGenDataType, b: TableGenDataType) => a.JAK1ToJAK2_median! - b.JAK1ToJAK2_median!,
+        sortDirections: ['descend', 'ascend'],
+    },
+    {
+        title: 'JAK1ToJAK2_std',
+        dataIndex: 'JAK1ToJAK2_median',
+        sorter: (a: TableGenDataType, b: TableGenDataType) => a.JAK1ToJAK2_std! - b.JAK1ToJAK2_std!,
+        sortDirections: ['descend', 'ascend'],
+    }
+];
+
+const jak1Tojak2 = ref(false);
+
 const onChange: TableProps<TableGenDataType>['onChange'] = (pagination, filters, sorter) => {
     console.log('params', pagination, filters, sorter);
 };
@@ -88,6 +118,7 @@ const props = withDefaults(defineProps<Props>(), {
     target: ''
 })
 
+
 onBeforeUpdate(() => {
     if (props.target.length > 0) {
         // console.log("gen onMounted ...", props.data);
@@ -101,6 +132,18 @@ onBeforeUpdate(() => {
                 f.title = title.replace("right", nn[1]);
             }
         })
+
+        if (props.data.length > 0) {
+            let n = props.data[0];
+            if (n.JAK1ToJAK2_mean) {
+                jak1Tojak2.value = true;
+            } else {
+                jak1Tojak2.value = false;
+            }
+        } else {
+            jak1Tojak2.value = false;
+
+        }
     }
 });
 // const emit = defineEmits(['update:select'])
@@ -171,7 +214,7 @@ const handleCancel = () => {
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :scroll="{ y: 480, x: 1500 }" :pagination="false" :bordered="true">
+        <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500 }" :pagination="false" :bordered="true">
             <template #bodyCell="{ column, text }">
 
                 <template v-if="column.dataIndex === 'SMILES'">
@@ -239,6 +282,30 @@ const handleCancel = () => {
 
 
         </a-table>
+
+
+        <div v-if="jak1Tojak2" class="main1">
+            Extra:
+            <a-table :columns="columns2" :data-source="data" :pagination="false" :bordered="true">
+                <template #bodyCell="{ column, text }">
+                    <template v-if="column.dataIndex === 'SMILES'">
+                        <a-dropdown placement="topLeft">
+                            <img :src="getUrl(text)" style="width:100%;" />
+
+                            <template #overlay>
+                                <a-menu @click="(e: any) => {
+                                    clickMenu(e.key, text);
+                                }">
+                                    <a-menu-item key="1">
+                                        复制
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </template>
+                </template>
+            </a-table>
+        </div>
         <a-modal v-model:visible="modalVisble">
             <template #footer>
                 <a-button key="submit" @click="handleCancel">Ok</a-button>
@@ -248,4 +315,14 @@ const handleCancel = () => {
     </main>
 </template>
 
-<style></style>
+<style>
+.main1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 将子元素垂直居中 */
+    justify-content: center;
+    gap: 0.4rem;
+    /* 将子元素水平居中 */
+}
+</style>
