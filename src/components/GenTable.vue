@@ -37,6 +37,8 @@ let columns: TableColumnType<TableGenDataType>[] = [
         dataIndex: 'Left_median',
         sorter: (a: TableGenDataType, b: TableGenDataType) => a.Left_median - b.Left_median,
         sortDirections: ['descend', 'ascend'],
+        width: 100
+
     },
     {
         title: 'left_std',
@@ -55,6 +57,8 @@ let columns: TableColumnType<TableGenDataType>[] = [
         dataIndex: 'Right_median',
         sorter: (a: TableGenDataType, b: TableGenDataType) => a.Right_median - b.Right_median,
         sortDirections: ['descend', 'ascend'],
+        width: 100
+
     },
     {
         title: 'right_std',
@@ -63,13 +67,14 @@ let columns: TableColumnType<TableGenDataType>[] = [
         sortDirections: ['descend', 'ascend'],
     },
     {
-        title: 'left_doi',
+        title: 'left_ref',
         dataIndex: 'Left_ArticleDOI',
-        width: 100
+        maxWidth: 200
     },
     {
-        title: 'right_doi',
+        title: 'right_ref',
         dataIndex: 'Right_ArticleDOI',
+        maxWidth: 200
     },
 
 ];
@@ -126,10 +131,14 @@ onBeforeUpdate(() => {
         let nn = props.target.split('-');
         columns.forEach(f => {
             let title = f.title as string;
-            if (title.startsWith('left')) {
-                f.title = title.replace("left", nn[0]);
-            } else if (title.startsWith('right')) {
-                f.title = title.replace("right", nn[1]);
+            try {
+                if (title.startsWith('left')) {
+                    f.title = title.replace("left", nn[0].toLocaleLowerCase());
+                } else if (title.startsWith('right')) {
+                    f.title = title.replace("right", nn[1].toLocaleLowerCase());
+                }
+            } catch (e) {
+
             }
         })
 
@@ -214,8 +223,9 @@ const handleCancel = () => {
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500 }" :pagination="false" :bordered="true">
-            <template #bodyCell="{ column, text }">
+        <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500 }" :pagination="false" :bordered="true"
+            size="small">
+            <template #bodyCell="{ column, text, record }">
 
                 <template v-if="column.dataIndex === 'SMILES'">
                     <a-dropdown placement="topLeft">
@@ -272,10 +282,10 @@ const handleCancel = () => {
                 </template>
 
                 <template v-if="column.dataIndex === 'Right_ArticleDOI'">
-                    <Doi :text="text" />
+                    <Doi :text="record" :dataIndex="column.dataIndex" />
                 </template>
                 <template v-if="column.dataIndex === 'Left_ArticleDOI'">
-                    <Doi :text="text" />
+                    <Doi :text="record" :dataIndex="column.dataIndex" />
                 </template>
             </template>
 
@@ -286,7 +296,7 @@ const handleCancel = () => {
 
         <div v-if="jak1Tojak2" class="main1">
             Extra:
-            <a-table :columns="columns2" :data-source="data" :pagination="false" :bordered="true">
+            <a-table :columns="columns2" :data-source="data" :pagination="false" :bordered="true" size="small">
                 <template #bodyCell="{ column, text }">
                     <template v-if="column.dataIndex === 'SMILES'">
                         <a-dropdown placement="topLeft">

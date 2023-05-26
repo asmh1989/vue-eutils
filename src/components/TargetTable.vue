@@ -109,7 +109,7 @@ const handleCancel = () => {
 <template>
     <main>
         <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 420 }" :pagination="false"
-            :bordered="true">
+            size="small" :bordered="true">
             <template #bodyCell="{ column, text }">
 
                 <template v-if="column.dataIndex === 'img1'">

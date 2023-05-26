@@ -9,14 +9,14 @@ export type TableDataType = {
 };
 
 export type TableGenDataType = {
-  Left_ArticleDOI: string[];
+  Left_ArticleDOI: string;
   Left_Frag: string;
   Left_PatentNumber: string;
   Left_mean: number;
   Left_median: number;
   Left_scaffold: string;
   Left_std: number;
-  Right_ArticleDOI: string[];
+  Right_ArticleDOI: string;
   Right_Frag: string;
   Right_PatentNumber: string;
   Right_mean: number;
