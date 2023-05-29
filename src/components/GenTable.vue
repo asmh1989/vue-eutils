@@ -1,30 +1,29 @@
 <script setup lang="ts">
 import { APISettings } from '@/api/config';
-import { copyToClipboard, type TableGenDataType } from '@/common/mode';
+import { getDoiUrl, copyToClipboard, type TableGenDataType } from '@/common/mode';
 
-import type { TableColumnType, TableProps } from 'ant-design-vue';
-import { onBeforeUpdate, onMounted, ref } from 'vue';
+import { message, type TableColumnType, type TableProps } from 'ant-design-vue';
+import { onBeforeUpdate, ref } from 'vue';
 
-import Doi from './Doi.vue'
 
 let columns: TableColumnType<TableGenDataType>[] = [
     {
         title: 'struct',
         dataIndex: 'SMILES',
         key: 'smiles',
-        width: 240,
+        width: 220,
         fixed: 'left'
     },
     {
         title: 'left_struct',
         dataIndex: 'Left_Frag',
-        width: 240,
+        width: 220,
     },
     {
         title: 'right_struct',
         dataIndex: 'Right_Frag',
         key: 'smiles',
-        width: 240,
+        width: 220,
     },
     {
         title: 'left_mean',
@@ -66,16 +65,16 @@ let columns: TableColumnType<TableGenDataType>[] = [
         sorter: (a: TableGenDataType, b: TableGenDataType) => a.Right_std - b.Right_std,
         sortDirections: ['descend', 'ascend'],
     },
-    {
-        title: 'left_ref',
-        dataIndex: 'Left_ArticleDOI',
-        maxWidth: 200
-    },
-    {
-        title: 'right_ref',
-        dataIndex: 'Right_ArticleDOI',
-        maxWidth: 200
-    },
+    // {
+    //     title: 'left_ref',
+    //     dataIndex: 'Left_ArticleDOI',
+    //     width: 120
+    // },
+    // {
+    //     title: 'right_ref',
+    //     dataIndex: 'Right_ArticleDOI',
+    //     width: 120
+    // },
 
 ];
 
@@ -153,13 +152,11 @@ onBeforeUpdate(() => {
             jak1Tojak2.value = false;
 
         }
+
     }
 });
-// const emit = defineEmits(['update:select'])
-// const customKey = ref('');
 const modalVisble = ref(false);
 const modalImg = ref('');
-
 
 function getUrl(url: String) {
     let data = props.data.find((person => person.SMILES === url));
@@ -201,29 +198,66 @@ function clickMenu(key: number, text: string) {
 
 function clickMenu1(key: number, text: any, index: string, left: boolean) {
     let data = props.data.find(person => (person as any)[index] == text);
-    console.log(`clickMenu key = ${key}, data = ${JSON.stringify(data)}`);
+    // console.log(`clickMenu key = ${key}, data = ${JSON.stringify(data)}`);
+    vv.value = [];
+    num.value = [];
 
-    if (key == 0) {
-        modalImg.value = getUrl3((data as any)[index], left);
-        modalVisble.value = true;
-    } else if (key == 1) {
-        copyToClipboard(text);
-        // navigator.clipboard.writeText(text)
-        //     .then(() => message.success('Smiles已复制到剪贴板'))
-        //     .catch(err => message.error('Failed to copy text: ', err))
+    try {
+        let pp = data!;
+        let t = pp.Left_ArticleDOI.replace(/'/g, '"');
+        let s = pp.Left_PatentNumber.replace(/'/g, '"');
+        if (left) {
+            t = pp.Left_ArticleDOI.replace(/'/g, '"');
+        } else {
+            t = pp.Right_ArticleDOI.replace(/'/g, '"');
+
+            s = pp.Right_PatentNumber.replace(/'/g, '"');
+        }
+
+
+        if (key == 0) {
+            modalImg.value = getUrl3((data as any)[index], left);
+            modalVisble.value = true;
+        } else if (key == 1) {
+            copyToClipboard(text);
+        } else if (key == 2) {
+            let ss = JSON.parse(t);
+            if (ss.length == 0) {
+                message.info("empty!");
+            } else {
+                vv.value = ss;
+                modalVisble.value = true;
+            }
+        } else if (key == 3) {
+            let ss = JSON.parse(s);
+            if (ss.length == 0) {
+                message.info("empty!");
+            } else {
+                num.value = ss;
+                modalVisble.value = true;
+            }
+        }
+
+    } catch (e) {
+        console.error(`doi err = ${e}`)
     }
 }
 
 const handleCancel = () => {
+    vv.value = [];
+    num.value = [];
     modalVisble.value = false;
+
 };
 
+const vv = ref<string[]>([])
+const num = ref<string[]>([])
 
 </script>
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500 }" :pagination="false" :bordered="true"
+        <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 480 }" :pagination="false" :bordered="true"
             size="small">
             <template #bodyCell="{ column, text, record }">
 
@@ -257,6 +291,12 @@ const handleCancel = () => {
                                 <a-menu-item key="1">
                                     复制
                                 </a-menu-item>
+                                <a-menu-item key="2">
+                                    DOI
+                                </a-menu-item>
+                                <a-menu-item key="3">
+                                    PatentNumber
+                                </a-menu-item>
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -276,17 +316,23 @@ const handleCancel = () => {
                                 <a-menu-item key="1">
                                     复制
                                 </a-menu-item>
+                                <a-menu-item key="2">
+                                    DOI
+                                </a-menu-item>
+                                <a-menu-item key="3">
+                                    PatentNumber
+                                </a-menu-item>
                             </a-menu>
                         </template>
                     </a-dropdown>
                 </template>
-
+                <!-- 
                 <template v-if="column.dataIndex === 'Right_ArticleDOI'">
                     <Doi :text="record" :dataIndex="column.dataIndex" />
                 </template>
                 <template v-if="column.dataIndex === 'Left_ArticleDOI'">
                     <Doi :text="record" :dataIndex="column.dataIndex" />
-                </template>
+                </template> -->
             </template>
 
 
@@ -296,7 +342,8 @@ const handleCancel = () => {
 
         <div v-if="jak1Tojak2" class="main1">
             Extra:
-            <a-table :columns="columns2" :data-source="data" :pagination="false" :bordered="true" size="small">
+            <a-table :columns="columns2" :data-source="data" :pagination="false" :bordered="true" size="small"
+                :scroll="{ y: 480 }">
                 <template #bodyCell="{ column, text }">
                     <template v-if="column.dataIndex === 'SMILES'">
                         <a-dropdown placement="topLeft">
@@ -320,7 +367,19 @@ const handleCancel = () => {
             <template #footer>
                 <a-button key="submit" @click="handleCancel">Ok</a-button>
             </template>
-            <img :src="modalImg" style="width:100%;" />
+            <div class="main3">
+                <template v-if="num.length > 0" v-for="site in num">
+                    {{ site }} {{ " " }}
+                </template>
+
+                <template v-else-if="vv.length > 0" v-for="site in vv">
+                    <a :href="getDoiUrl(site)" target="_blank" class="marquee">{{ site }}</a>
+                </template>
+
+                <template v-else-if="modalVisble">
+                    <img :src="modalImg" style="width:100%;" />
+                </template>
+            </div>
         </a-modal>
     </main>
 </template>
@@ -333,6 +392,17 @@ const handleCancel = () => {
     /* 将子元素垂直居中 */
     justify-content: center;
     gap: 0.4rem;
+    margin: auto;
+    width: 60%;
+    /* 将子元素水平居中 */
+}
+
+.main3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 将子元素垂直居中 */
+    justify-content: center;
     /* 将子元素水平居中 */
 }
 </style>
