@@ -8,7 +8,7 @@ import type { TabsProps } from "ant-design-vue/lib/tabs/src/Tabs";
 import TargetTable from "../components/TargetTable.vue"
 import GenTable from "../components/GenTable.vue"
 
-import type { TableDataType, TableGenDataType } from "@/common/mode";
+import { getUrl, type TableDataType, type TableGenDataType } from "@/common/mode";
 import { message } from "ant-design-vue";
 
 const page = usePageStore();
@@ -93,9 +93,6 @@ onMounted(() => {
     getData();
 });
 
-function getUrl(url: String) {
-    return `${APISettings.baseURL}/${url}`
-}
 
 async function clickGen() {
     if (left_select.value && right_select.value) {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { APISettings } from '@/api/config';
-import { copyToClipboard, type TableDataType } from '@/common/mode';
-import type { TableColumnType, TableProps } from 'ant-design-vue';
+import { getUrl, copyToClipboard, getDoiUrl, type TableDataType } from '@/common/mode';
+import { message, type TableColumnType, type TableProps } from 'ant-design-vue';
 import { ref } from 'vue';
 
 
@@ -63,10 +62,6 @@ function handleChange(val: any) {
     emit('update:select', val);
 }
 
-function getUrl(url: String) {
-    return `${APISettings.baseURL}/${url}`
-}
-
 function rowAction(record: TableDataType, index: number) {
     // console.log("table rowAction " + index)
 
@@ -87,20 +82,46 @@ function rowAction(record: TableDataType, index: number) {
 function clickMenu(key: number, text: any) {
     let data = props.data.find((person => person.img1 === text));
     console.log(`clickMenu key = ${key}, data = ${JSON.stringify(data)}`);
+    vv.value = [];
+    num.value = [];
+    try {
 
-    if (key == 0) {
-        modalImg.value = getUrl(data!.img2);
-        modalVisble.value = true;
-    } else if (key == 1) {
-
-        copyToClipboard(data!.SMILES);
-        // navigator.clipboard.writeText(data!.SMILES)
-        //     .then(() => message.success('Smiles已复制到剪贴板'))
-        //     .catch(err => message.error('Failed to copy text: ', err))
+        let pp = data!;
+        let t = pp.ArticleDOI.replace(/'/g, '"');
+        let s = pp.PatentNumber.replace(/'/g, '"');
+        if (key == 0) {
+            modalImg.value = getUrl(data!.img2);
+            modalVisble.value = true;
+        } else if (key == 1) {
+            copyToClipboard(data!.SMILES);
+        } else if (key == 2) {
+            let ss = JSON.parse(t);
+            if (ss.length == 0) {
+                message.info("empty!");
+            } else {
+                vv.value = ss;
+                modalVisble.value = true;
+            }
+        } else if (key == 3) {
+            let ss = JSON.parse(s);
+            if (ss.length == 0) {
+                message.info("empty!");
+            } else {
+                num.value = ss;
+                modalVisble.value = true;
+            }
+        }
+    } catch (e) {
+        console.error(`doi err = ${e}`)
     }
 }
 
+const vv = ref<string[]>([])
+const num = ref<string[]>([])
+
 const handleCancel = () => {
+    vv.value = [];
+    num.value = [];
     modalVisble.value = false;
 };
 
@@ -114,7 +135,7 @@ const handleCancel = () => {
 
                 <template v-if="column.dataIndex === 'img1'">
                     <!-- {{ text }} -->
-                    <a-dropdown placement="topLeft">
+                    <a-dropdown placement="bottom">
                         <img :src="getUrl(text)" style="width:100%;" />
 
                         <template #overlay>
@@ -126,6 +147,12 @@ const handleCancel = () => {
                                 </a-menu-item>
                                 <a-menu-item key="1">
                                     复制
+                                </a-menu-item>
+                                <a-menu-item key="2">
+                                    DOI
+                                </a-menu-item>
+                                <a-menu-item key="3">
+                                    PatentNumber
                                 </a-menu-item>
                             </a-menu>
                         </template>
@@ -142,9 +169,30 @@ const handleCancel = () => {
             <template #footer>
                 <a-button key="submit" @click="handleCancel">Ok</a-button>
             </template>
-            <img :src="modalImg" style="height:400px;" />
+            <div class="main3">
+                <template v-if="num.length > 0" v-for="site in num">
+                    {{ site }} {{ " " }}
+                </template>
+
+                <template v-else-if="vv.length > 0" v-for="site in vv">
+                    <a :href="getDoiUrl(site)" target="_blank" class="marquee">{{ site }}</a>
+                </template>
+
+                <template v-else-if="modalVisble">
+                    <img :src="modalImg" style="width:100%;" />
+                </template>
+            </div>
         </a-modal>
     </main>
 </template>
 
-<style></style>
+<style>
+.main3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 将子元素垂直居中 */
+    justify-content: center;
+    /* 将子元素水平居中 */
+}
+</style>

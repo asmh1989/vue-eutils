@@ -158,27 +158,27 @@ onBeforeUpdate(() => {
 const modalVisble = ref(false);
 const modalImg = ref('');
 
-function getUrl(url: String) {
+function getUrl(url: string) {
     let data = props.data.find((person => person.SMILES === url));
-    return `${APISettings.baseURL}/dual/${props.target}/GenCPDs/Struct/${data?.title}.png`
+    return `${APISettings.baseURL}/dual/${props.target}/GenCPDs/Struct/${encodeURIComponent(data!.title)}.png`
 }
 
-function getUrl2(url: String, left: boolean) {
+function getUrl2(url: string, left: boolean) {
     let nn = props.target.split('-');
     let n = nn[0];
     if (!left) {
         n = nn[1];
     }
-    return `${APISettings.baseURL}/dual/${props.target}/${n}/Motifs-R/Smi_${url}.png`
+    return `${APISettings.baseURL}/dual/${props.target}/${n}/Motifs-R/Smi_${encodeURIComponent(url)}.png`
 }
 
-function getUrl3(url: String, left: boolean) {
+function getUrl3(url: string, left: boolean) {
     let nn = props.target.split('-');
     let n = nn[0];
     if (!left) {
         n = nn[1];
     }
-    return `${APISettings.baseURL}/dual/${props.target}/${n}/Motifs-R/Smi_${url}_dist.png`
+    return `${APISettings.baseURL}/dual/${props.target}/${n}/Motifs-R/Smi_${encodeURIComponent(url)}_dist.png`
 }
 
 
@@ -262,7 +262,7 @@ const num = ref<string[]>([])
             <template #bodyCell="{ column, text, record }">
 
                 <template v-if="column.dataIndex === 'SMILES'">
-                    <a-dropdown placement="topLeft">
+                    <a-dropdown placement="bottom">
                         <img :src="getUrl(text)" style="width:100%;" />
 
                         <template #overlay>
@@ -278,7 +278,7 @@ const num = ref<string[]>([])
                 </template>
 
                 <template v-if="column.dataIndex === 'Left_Frag'">
-                    <a-dropdown placement="topLeft">
+                    <a-dropdown placement="bottom">
                         <img :src="getUrl2(text, true)" style="width:100%;" />
 
                         <template #overlay>
@@ -303,7 +303,7 @@ const num = ref<string[]>([])
                 </template>
 
                 <template v-if="column.dataIndex === 'Right_Frag'">
-                    <a-dropdown placement="topLeft">
+                    <a-dropdown placement="bottom">
                         <img :src="getUrl2(text, false)" style="width:100%;" />
 
                         <template #overlay>
