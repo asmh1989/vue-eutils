@@ -85,7 +85,6 @@ function clickMenu(key: number, text: any) {
     vv.value = [];
     num.value = [];
     try {
-
         let pp = data!;
         let t = pp.ArticleDOI.replace(/'/g, '"');
         let s = pp.PatentNumber.replace(/'/g, '"');
@@ -129,16 +128,16 @@ const handleCancel = () => {
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 420 }" :pagination="false"
+        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 360 }" :pagination="false"
             size="small" :bordered="true">
             <template #bodyCell="{ column, text }">
 
                 <template v-if="column.dataIndex === 'img1'">
                     <!-- {{ text }} -->
-                    <a-dropdown placement="bottom">
-                        <img :src="getUrl(text)" style="width:100%;" />
+                    <!-- <a-dropdown placement="bottom"> -->
+                    <img :src="getUrl(text)" style="width:100%;" />
 
-                        <template #overlay>
+                    <!-- <template #overlay>
                             <a-menu @click="(e: any) => {
                                 clickMenu(e.key, text);
                             }">
@@ -155,17 +154,12 @@ const handleCancel = () => {
                                     PatentNumber
                                 </a-menu-item>
                             </a-menu>
-                        </template>
-                    </a-dropdown>
+                        </template> -->
+                    <!-- </a-dropdown> -->
                 </template>
-
-
             </template>
-
-
-
         </a-table>
-        <a-modal v-model:visible="modalVisble">
+        <!-- <a-modal v-model:visible="modalVisble">
             <template #footer>
                 <a-button key="submit" @click="handleCancel">Ok</a-button>
             </template>
@@ -182,7 +176,7 @@ const handleCancel = () => {
                     <img :src="modalImg" style="width:100%;" />
                 </template>
             </div>
-        </a-modal>
+        </a-modal> -->
     </main>
 </template>
 

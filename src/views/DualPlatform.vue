@@ -7,6 +7,7 @@ import type { TabsProps } from "ant-design-vue/lib/tabs/src/Tabs";
 
 import TargetTable from "../components/TargetTable.vue"
 import GenTable from "../components/GenTable.vue"
+import SelectView from "@/components/SelectView.vue";
 
 import { getUrl, type TableDataType, type TableGenDataType } from "@/common/mode";
 import { message } from "ant-design-vue";
@@ -84,7 +85,6 @@ function targetChange(value: String) {
     console.log(`targetChange ${cur_target.value} `);
 }
 onMounted(() => {
-    console.log("onMounted ...");
 
     watch(left_select, (newValue, oldValue) => {
         // console.log(`Count changed from ${oldValue} to ${newValue}`)
@@ -132,12 +132,21 @@ async function clickGen() {
             <a-radio-button value="left">{{ dual_target.split("-")[0] }}</a-radio-button>
             <a-radio-button value="right">{{ dual_target.split("-")[1] }}</a-radio-button>
         </a-radio-group>
-        <div style="width: 60%;">
-            <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
-            <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
-        </div>
-        <div v-if="left_select || right_select">
-            <p> Select: </p>
+        <a-row>
+            <a-col :span="12">
+                <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
+                <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
+            </a-col>
+            <a-col :span="6">
+                <SelectView v-if="left_select" v-model:data="left_select" />
+            </a-col>
+            <a-col :span="6">
+                <SelectView v-if="right_select" v-model:data="right_select" />
+            </a-col>
+
+        </a-row>
+        <div v-if="left_select || right_select" class="select">
+            <div>Select:</div>
             <a-space>
                 <a-tooltip>
                     <template #title>{{ left_select?.title }}</template>
@@ -153,9 +162,7 @@ async function clickGen() {
         <div style="padding: 0.25rem;" />
         <a-button @click="clickGen">Generate</a-button>
         <div style="padding: 0.25rem;" />
-        <div style="width: 90%;">
-            <GenTable :data="gen_data" :target="dual_target" />
-        </div>
+        <GenTable :data="gen_data" :target="dual_target" />
         <div style="padding: 0.25rem;" />
     </div>
 </template>
@@ -164,6 +171,17 @@ async function clickGen() {
 .main {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    /* 将子元素垂直居中 */
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 16px;
+    /* 将子元素水平居中 */
+}
+
+.select {
+    display: flex;
+    flex-direction: row;
     align-items: center;
     /* 将子元素垂直居中 */
     justify-content: center;
