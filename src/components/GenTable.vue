@@ -8,7 +8,7 @@ import {
 } from "@/common/mode";
 
 import { message, type TableColumnType, type TableProps } from "ant-design-vue";
-import { onBeforeUpdate, onMounted, onUnmounted, ref } from "vue";
+import { onBeforeUpdate, onMounted, onUnmounted, ref, watch } from "vue";
 import SelectView from "@/components/SelectView.vue";
 
 let columns: TableColumnType<TableGenDataType>[] = [
@@ -117,6 +117,14 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => [],
   target: "",
 });
+
+watch(
+  () => props.data,
+  (newValue, oldValue) => {
+    // console.log("changed");
+    customKey.value = undefined;
+  }
+);
 
 function refresh() {
   if (props.target.length > 0) {
@@ -402,7 +410,7 @@ function rowAction(record: TableGenDataType, index: number) {
       </template>
     </a-table>
 
-    <a-row v-if="left_select">
+    <a-row v-if="customKey">
       <a-col :span="12">
         <SelectView v-if="left_select" v-model:data="left_select" />
       </a-col>
