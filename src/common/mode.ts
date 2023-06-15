@@ -10,6 +10,14 @@ export type TableDataType = {
   title: string;
   ArticleDOI: string;
   PatentNumber: string;
+  Title?: string;
+  Score?: number;
+};
+
+export type TableDataLinkType = {
+  SMILES: string;
+  Title: string;
+  Score: number;
 };
 
 export type TableGenDataType = {
@@ -56,6 +64,10 @@ export function getUrl2(
 
 export function getUrl(url: string) {
   return `${APISettings.baseURL}/${url}`;
+}
+
+export function getSmilesUrl(url: string) {
+  return `${APISettings.baseURL}/smiles/${encodeURIComponent(url)}`;
 }
 
 export function copyToClipboard(textToCopy: string) {

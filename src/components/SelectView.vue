@@ -55,6 +55,7 @@ function clickMenu(key: number) {
       }
     }
   } catch (e) {
+    message.info("empty!");
     console.error(`doi err = ${e}`);
   }
 }

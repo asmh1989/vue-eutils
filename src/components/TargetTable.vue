@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { getUrl, copyToClipboard, getDoiUrl, type TableDataType } from '@/common/mode';
+import { getUrl,getSmilesUrl, copyToClipboard, type TableDataType } from '@/common/mode';
 import { message, type TableColumnType, type TableProps } from 'ant-design-vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 
 
@@ -37,6 +37,26 @@ const columns: TableColumnType<TableDataType>[] = [
 
 ];
 
+const columns2: TableColumnType<TableDataType>[] = [
+    {
+        title: 'name',
+        dataIndex: 'Title',
+    },
+    {
+        title: 'struct',
+        dataIndex: 'SMILES',
+        key: 'img1',
+        width: 200,
+    },
+    {
+        title: 'score',
+        dataIndex: 'Score',
+        sorter: (a: TableDataType, b: TableDataType) => a.Score! - b.Score!,
+        sortDirections: ['descend', 'ascend'],
+    }
+
+];
+
 const onChange: TableProps<TableDataType>['onChange'] = (pagination, filters, sorter) => {
     console.log('params', pagination, filters, sorter);
 };
@@ -44,11 +64,13 @@ const onChange: TableProps<TableDataType>['onChange'] = (pagination, filters, so
 interface Props {
     data: TableDataType[]	 // v-model 默认的名字
     select: TableDataType | undefined
+    isLink: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
     data: () => [],
-    select: undefined
+    select: undefined,
+    isLink: false,
 })
 
 const emit = defineEmits(['update:select'])
@@ -72,6 +94,23 @@ function rowAction(record: TableDataType, index: number) {
         onClick: (event: any) => {
             // console.log("table onClick " + index)
             customKey.value = record.title;
+            emit('update:select', record);
+
+        },
+
+    }
+}
+
+function rowAction2(record: TableDataType, index: number) {
+    // console.log("table rowAction " + index)
+
+    return {
+        style: {
+            'background-color': record.Title == customKey.value ? 'rgb(0,180,237, 0.1)' : '',
+        },
+        onClick: (event: any) => {
+            // console.log("table onClick " + index)
+            customKey.value = record.Title!;
             emit('update:select', record);
 
         },
@@ -124,11 +163,17 @@ const handleCancel = () => {
     modalVisble.value = false;
 };
 
+onMounted(() => {
+    if (props.data) {
+        
+    }
+});
+
 </script>
 
 <template>
     <main>
-        <a-table :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 360 }" :pagination="false"
+        <a-table v-if="!props.isLink" :columns="columns" :data-source="data" :customRow="rowAction" :scroll="{ y: 360 }" :pagination="false"
             size="small" :bordered="true">
             <template #bodyCell="{ column, text }">
 
@@ -156,6 +201,17 @@ const handleCancel = () => {
                             </a-menu>
                         </template> -->
                     <!-- </a-dropdown> -->
+                </template>
+            </template>
+        </a-table>
+        <a-table v-else :columns="columns2" :data-source="data" :customRow="rowAction2" :scroll="{ y: 360 }" :pagination="false"
+            size="small" :bordered="true">
+            <template #bodyCell="{ column, text }">
+
+                <template v-if="column.dataIndex === 'SMILES'">
+                    <!-- {{ text }} -->
+                    <!-- <a-dropdown placement="bottom"> -->
+                    <img :src="getSmilesUrl(text)" style="width:100%;" />
                 </template>
             </template>
         </a-table>

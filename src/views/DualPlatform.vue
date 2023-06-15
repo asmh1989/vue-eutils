@@ -9,8 +9,9 @@ import TargetTable from "../components/TargetTable.vue"
 import GenTable from "../components/GenTable.vue"
 import SelectView from "@/components/SelectView.vue";
 
-import { getUrl, type TableDataType, type TableGenDataType } from "@/common/mode";
+import { getSmilesUrl, getUrl, type TableDataLinkType, type TableDataType, type TableGenDataType } from "@/common/mode";
 import { message } from "ant-design-vue";
+import LinkTable from "@/components/LinkTable.vue";
 
 const page = usePageStore();
 page.setTitle("Dual Target Drug Design Platform");
@@ -26,6 +27,7 @@ const left_select = ref<TableDataType | undefined>(undefined);
 const right_select = ref<TableDataType | undefined>(undefined);
 const right_data = ref();
 const gen_data = ref<TableGenDataType[] | undefined>(undefined);
+const link_data = ref<TableDataLinkType[] | undefined>(undefined);
 
 async function getData() {
     try {
@@ -77,6 +79,9 @@ async function handleChange(value: String) {
     left_data.value = target_data.value.get(`${value}/0`);
     right_data.value = target_data.value.get(`${value}/1`);
 
+    left_select.value = undefined;
+    right_select.value = undefined;
+
     console.log(left_data.value);
 
 }
@@ -97,18 +102,35 @@ onMounted(() => {
 async function clickGen() {
     if (left_select.value && right_select.value) {
         try {
-            let res = await fetch(
-                `${APISettings.baseURL}/api/dual/${dual_target.value}/${left_select.value.SMILES}/${right_select.value.SMILES}`
-            );
-            if (res.status == 200) {
-                let json = await res.json();
-                if (json.ok) {
-                    gen_data.value = json.ok;
+            if (!isLink()) {
+                let res = await fetch(
+                    `${APISettings.baseURL}/api/dual/${dual_target.value}/${left_select.value.SMILES}/${right_select.value.SMILES}`
+                );
+                if (res.status == 200) {
+                    let json = await res.json();
+                    if (json.ok) {
+                        gen_data.value = json.ok;
 
-                    if (json.ok.length == 0) {
-                        message.info('未发现可生成的分子');
+                        if (json.ok.length == 0) {
+                            message.info('未发现可生成的分子');
+                        }
+                    } else {
                     }
-                } else {
+                }
+            } else {
+                let res = await fetch(
+                    `${APISettings.baseURL}/api/dual/${dual_target.value}/${left_select.value.Title!}/${right_select.value.Title!}`
+                );
+                if (res.status == 200) {
+                    let json = await res.json();
+                    if (json.ok) {
+                        link_data.value = json.ok;
+
+                        if (json.ok.length == 0) {
+                            message.info('未发现Link');
+                        }
+                    } else {
+                    }
                 }
             }
         } catch (e) {
@@ -117,6 +139,16 @@ async function clickGen() {
     }
 }
 
+function isLink() {
+    if (dual_target.value != undefined){
+        let v = dual_target.value as string;
+        if (v.endsWith("-LINK")) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 </script>
 
@@ -134,8 +166,8 @@ async function clickGen() {
         </a-radio-group>
         <a-row>
             <a-col :span="12">
-                <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" />
-                <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" />
+                <TargetTable v-show="cur_target == 'left'" :data="left_data" v-model:select="left_select" :isLink="isLink()" />
+                <TargetTable v-show="cur_target == 'right'" :data="right_data" v-model:select="right_select" :isLink="isLink()"/>
             </a-col>
             <a-col :span="6">
                 <SelectView v-if="left_select" v-model:data="left_select" />
@@ -149,20 +181,23 @@ async function clickGen() {
             <div>Select:</div>
             <a-space>
                 <a-tooltip>
-                    <template #title>{{ left_select?.title }}</template>
-                    <img v-if="left_select" :src="getUrl(left_select!.img1)" style="height:100px;" />
+                    <template #title>{{ isLink() ?left_select?.Title :  left_select?.title }}</template>
+                    <img v-if="left_select" :src="isLink() ? getSmilesUrl(left_select!.SMILES) : getUrl(left_select!.img1)" style="height:200px;" />
                 </a-tooltip>
                 <a-tooltip>
-                    <template #title>{{ right_select?.title }}</template>
-                    <img v-if="right_select" :src="getUrl(right_select!.img1)" style="height:100px;" />
+                    <template #title>{{ isLink() ?right_select?.Title: right_select?.title }}</template>
+                    <img v-if="right_select" :src="isLink() ? getSmilesUrl(right_select!.SMILES):getUrl(right_select!.img1)" style="height:200px;" />
                 </a-tooltip>
             </a-space>
 
         </div>
         <div style="padding: 0.25rem;" />
-        <a-button @click="clickGen">Generate</a-button>
+        <a-button @click="clickGen">{{isLink()? "Link" : "Generate"}}</a-button>
         <div style="padding: 0.25rem;" />
-        <GenTable :data="gen_data" :target="dual_target" />
+        <GenTable v-if="!isLink()" :data="gen_data" :target="dual_target" />
+
+        <LinkTable v-else :data="link_data" :target="dual_target" />
+
         <div style="padding: 0.25rem;" />
     </div>
 </template>
