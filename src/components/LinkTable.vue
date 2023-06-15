@@ -16,7 +16,7 @@ const columns: TableColumnType<TableDataLinkType>[] = [
         title: 'struct',
         dataIndex: 'SMILES',
         key: 'img1',
-        width: 300,
+        width: 200,
     },
     {
         title: 'score',
@@ -27,7 +27,25 @@ const columns: TableColumnType<TableDataLinkType>[] = [
 
 ];
 
+const columns2: TableColumnType<TableDataLinkType>[] = [
+    {
+        title: 'name',
+        dataIndex: 'Title',
+    },
+    {
+        title: 'struct',
+        dataIndex: 'SMILES',
+        key: 'img1',
+        width: 300,
+    },
+    {
+        title: 'score',
+        dataIndex: 'Score',
+        sorter: (a: TableDataLinkType, b: TableDataLinkType) => a.Score - b.Score,
+        sortDirections: ['descend', 'ascend'],
+    }
 
+];
 interface Props {
     data: TableDataLinkType[]	 // v-model 默认的名字
     target: string;
@@ -108,10 +126,10 @@ function clickMenu(key: number, text: any) {
                 <template v-if="column.dataIndex === 'SMILES'">
                     <!-- {{ text }} -->
                     <a-dropdown placement="bottom">
-                    <img :src="getSmilesUrl(text)" style="width:100%;" />
+                    <img :src="getSmilesUrl(text)" style="height:200px;" />
 
                     <template #overlay>
-                            <a-menu @click="(e: any) => {
+                            <a-menu v-if="text.length != 0" @click="(e: any) => {
                                 clickMenu(e.key, text);
                             }">
                                 <!-- <a-menu-item key="0">
@@ -136,14 +154,14 @@ function clickMenu(key: number, text: any) {
             <a-col :span="1" />
 
             <a-col :span="11">
-                <a-table :columns="columns" :data-source="pair_data"  :scroll="{ y: 640 }" :pagination="false"
+                <a-table :columns="columns2" :data-source="pair_data"  :scroll="{ y: 640 }" :pagination="false"
             size="small" :bordered="true">
             <template #bodyCell="{ column, text }">
 
                 <template v-if="column.dataIndex === 'SMILES'">
                     <!-- {{ text }} -->
                     <a-dropdown placement="bottom">
-                    <img :src="getSmilesUrl(text)" style="width:100%;" />
+                    <img :src="getSmilesUrl(text)" style="height:300px;" />
 
                     <template #overlay>
                             <a-menu @click="(e: any) => {

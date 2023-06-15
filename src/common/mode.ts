@@ -67,7 +67,7 @@ export function getUrl(url: string) {
 }
 
 export function getSmilesUrl(url: string) {
-  return `${APISettings.baseURL}/smiles/${encodeURIComponent(url)}`;
+  return `${APISettings.baseURL}/smiles/${encodeURIComponent(url.length == 0 ? "_": url)}`;
 }
 
 export function copyToClipboard(textToCopy: string) {
